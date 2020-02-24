@@ -6,9 +6,9 @@ var cookieParser = require('cookie-parser');
 /**Tests for ejs */
 const expressLayouts = require('express-ejs-layouts')
 
-var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
-var ideaRouter = require('./routes/idea')
+var indexRouter = require('./routes/indexRouter');
+var usersRouter = require('./routes/usersRouter');
+var ideaRouter = require('./routes/ideaRouter')
 
 var app = express();
 
@@ -17,7 +17,6 @@ var app = express();
 
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
-
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
