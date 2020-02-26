@@ -24,13 +24,17 @@ router.route('/')
       var {
          name
       } = req.body /**Need to put the variable into keys to recongize value */
-      pool.query(`INSERT INTO public.users(name) VALUES ('${name}')`)
+      if(name){
+         pool.query(`INSERT INTO public.users(name) VALUES ('${name}')`)
          .then((user) => {
             res.statusCode = 200
             //    res.setHeader('Content-type','application/json')
             res.send(`User ${user.rows} added`)
          }, (err) => next(err))
          .catch((err) => next(err))
+      }
+      else res.send('Name field is empty')
+      
    })
    .delete((req, res, next) => {
       /**Deleting all users*/

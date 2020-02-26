@@ -19,19 +19,24 @@ router.route('/')
         res.end(`PUT operation not supported on /ideas`)
     })
     .post((req, res, next) => {
-        const {category,description} = req.body /**Need to put the variable into keys to recongize value */
-        console.log('aqui via o casmfn')
-        console.log(category+description)
-        pool.query(`INSERT INTO public.ideas(category, description) VALUES ('${category}', '${description}')`)
-            .then((idea) => {
-                res.statusCode = 200
-                res.setHeader('Content-type','application/json')
-                res.send(`Idea ${idea.rows} added`)
-            }, (err) => next(err))
-            .catch((err) => next(err))
+        const {name,category,description} = req.body /**Need to put the variable into keys to recongize value */
+        if(name){
+            if(category){
+                if(description){
+                    pool.query(`INSERT INTO public.ideas(idea_owner,category, description) 
+                    VALUES ('${name}','${category}', '${description}')`)
+                    .then((idea) => {
+                        res.statusCode = 200
+                        res.setHeader('Content-type','application/json')
+                        res.send(`Idea ${idea.rows} added`)
+                    }, (err) => next(err))
+                    .catch((err) => next(err))
+                }else res.send('Description field is empty')
+            }else res.send('Category field is empty')
+        }else res.send('Name field is empty')       
     })
     .delete((req, res, next) => {
-        pool.query(`DELETE FROM public.idea`)
+        pool.query(`DELETE FROM public.ideas`)
          .then((resp) => {
             res.statusCode = 200 /**Inform a http request that it`s all ok */
             res.setHeader(`Content-type`, `application/json`) /**The type of the object */
@@ -55,9 +60,7 @@ router.route('/:ideaId')
     /**Updating a specify Idea */
 .put((req, res, next) => {
    const {description} = req.body
-   pool.query(`UPDATE public.ideas
-   SET  description='${description}'
-   WHERE idea_id='${req.params.ideaId}'`)
+   pool.query(`UPDATE public.ideas SET description='${description}' WHERE idea_id='${req.params.ideaId}'`)
         .then((user) => {
             res.statusCode = 200 /**Inform a http request that it`s all ok */
             res.setHeader(`Content-type`, `application/json`) /**The type of the object */
@@ -65,10 +68,25 @@ router.route('/:ideaId')
         }, (err) => next(err))
         .catch((err) => next(err))
 })
+.post((req, res, next) => {
+    const {name,description} = req.body /**Need to put the variable into keys to recongize value */
+    console.log(name+description)
+                pool.query(`INSERT INTO public.idea_comments(
+                    description, comment_owner)
+                    VALUES ('${description}','${name}')`)
+                .then((idea) => {
+                    res.statusCode = 200
+                    res.setHeader('Content-type','application/json')
+                    res.send(`Idea ${idea.rows} added`)
+                }, (err) => next(err))
+                .catch((err) => next(err))
+           
+})
 
 router.route('/:ideaId/comments')
     .get((req,res,next)=>{
-        pool.query('Select * from public.ideas')
+        console.log(req.params)
+        pool.query('SELECT comment_owner, description, comment_id, idea_id FROM public.idea_comments')
             .then((users) => {
                 res.statusCode = 200
                 res.setHeader('Content-type', 'application/json')
@@ -77,5 +95,6 @@ router.route('/:ideaId/comments')
             }, (err) => next(err))
             .catch((err) => next(err))
     })
+ 
 
 module.exports = router
