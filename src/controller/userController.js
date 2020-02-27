@@ -1,11 +1,12 @@
 var express = require('express');
 var router = express.Router();
-var pool = require(`./db_connection`)
+var pool = require(`../database/db_connection`)
 
 
 /* GET users listing. */
 router.route('/')
    .get((req, res, next) => {
+      console.log('TESTE')
       pool.query('Select * from public.users')
          .then((users) => {
             res.statusCode = 200
@@ -49,7 +50,7 @@ router.route('/')
 
 router.route('/:userId')
    .get((req, res, next) => {
-      console.log('userID')
+      console.log('userROuter')
       console.log(req.params.userId)
       pool.query(`SELECT * from public.users WHERE user_id=${req.params.userId}`)
          .then((users) => {

@@ -1,15 +1,15 @@
 var express = require('express');
 var router = express.Router();
-var pool = require(`./db_connection`)
+var pool = require(`../database/db_connection`)
 
 router.route('/')
     .get((req, res, next) => {
+        console.log('GET IDEAS')
         pool.query('Select * from public.ideas')
             .then((users) => {
                 res.statusCode = 200
                 res.setHeader('Content-type', 'application/json')
                 res.json(users.rows)
-                res.send('user')
             }, (err) => next(err))
             .catch((err) => next(err))
     })
@@ -19,21 +19,15 @@ router.route('/')
         res.end(`PUT operation not supported on /ideas`)
     })
     .post((req, res, next) => {
-        const {name,category,description} = req.body /**Need to put the variable into keys to recongize value */
-        if(name){
-            if(category){
-                if(description){
-                    pool.query(`INSERT INTO public.ideas(idea_owner,category, description) 
-                    VALUES ('${name}','${category}', '${description}')`)
-                    .then((idea) => {
-                        res.statusCode = 200
-                        res.setHeader('Content-type','application/json')
-                        res.send(`Idea ${idea.rows} added`)
-                    }, (err) => next(err))
-                    .catch((err) => next(err))
-                }else res.send('Description field is empty')
-            }else res.send('Category field is empty')
-        }else res.send('Name field is empty')       
+        const {category,description} = req.body /**Need to put the variable into keys to recongize value */
+            pool.query(`INSERT INTO public.ideas(category, description,created_at,updated_at) 
+            VALUES ('${category}', '${description}', CURRENT_TIMESTAMP ,CURRENT_TIMESTAMP)`)
+            .then((idea) => {
+                res.statusCode = 200
+                res.setHeader('Content-type','application/json')
+                res.send(`Idea ${idea.rows} added`)
+            }, (err) => next(err))
+            .catch((err) => next(err))   
     })
     .delete((req, res, next) => {
         pool.query(`DELETE FROM public.ideas`)
