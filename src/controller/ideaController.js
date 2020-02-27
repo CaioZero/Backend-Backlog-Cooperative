@@ -19,9 +19,9 @@ router.route('/')
         res.end(`PUT operation not supported on /ideas`)
     })
     .post((req, res, next) => {
-        const {category,description} = req.body /**Need to put the variable into keys to recongize value */
-            pool.query(`INSERT INTO public.ideas(category, description,created_at,updated_at) 
-            VALUES ('${category}', '${description}', CURRENT_TIMESTAMP ,CURRENT_TIMESTAMP)`)
+        const {idea_owner_id,category,description} = req.body /**Need to put the variable into keys to recongize value */
+            pool.query(`INSERT INTO public.ideas(idea_owner_id,category, description,created_at,updated_at) 
+            VALUES ('${idea_owner_id}','${category}', '${description}', CURRENT_TIMESTAMP ,CURRENT_TIMESTAMP)`)
             .then((idea) => {
                 res.statusCode = 200
                 res.setHeader('Content-type','application/json')
