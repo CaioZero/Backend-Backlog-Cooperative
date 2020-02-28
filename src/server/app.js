@@ -3,6 +3,7 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 const routes = require('../routes/routes')
+require('../database/db_connection')
 
 var app = express();
 
