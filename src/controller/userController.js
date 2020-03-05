@@ -7,8 +7,10 @@ const User = require('../models/User')
 router.route('/')
    .get(async (req, res,next) => {
       const users = await User.findAll()
-      return res.json(users)
-      
+      .then((users)=>{
+         return res.json(users)
+      }, (err) => next(err))
+      .catch((err) => next(err))
    })
    .put((req, res, next) => {
       /**403 is a code for forbidden method http */
@@ -18,7 +20,10 @@ router.route('/')
    .post(async (req, res) => {
       const {name} = req.body
       const user =  await User.create({name})
-      return res.json(user)
+      .then((users)=>{
+         return res.json(users)
+      }, (err) => next(err))
+      .catch((err) => next(err))
    }) 
    .delete((req, res, next) => {
       /**Deleting all users*/
@@ -34,16 +39,13 @@ router.route('/')
 //Post with sequelize 
 
 router.route('/:userId')
-   .get((req, res, next) => {
-      console.log('userROuter')
+   .get(async (req, res, next) => {
       console.log(req.params.userId)
-      pool.query(`SELECT * from public.users WHERE user_id=${req.params.userId}`)
-         .then((users) => {
-            res.statusCode = 200
-            res.setHeader('Content-type', 'application/json')
-            res.json(users.rows)
-         }, (err) => next(err))
-         .catch((err) => next(err))
+      const user = await User.findByPk(req.params.userId)
+      .then((users)=>{
+         return res.json(users)
+      }, (err) => next(err))
+      .catch((err) => next(err))
    })
    .post((req, res, next) => {
       /**403 is a code for forbidden method http */
