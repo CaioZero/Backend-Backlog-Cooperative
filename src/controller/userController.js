@@ -2,41 +2,24 @@ var express = require('express');
 var router = express.Router();
 var pool = require(`../database/db_connection`)
 
-
+const User = require('../models/User')
 /* GET users listing. */
 router.route('/')
-   .get((req, res, next) => {
-      console.log('TESTE')
-      pool.query('Select * from public.users')
-         .then((users) => {
-            res.statusCode = 200
-            res.setHeader('Content-type', 'application/json')
-            res.json(users.rows)
-         }, (err) => next(err))
-         .catch((err) => next(err))
-
+   .get(async (req, res,next) => {
+      const users = await User.findAll()
+      return res.json(users)
+      
    })
    .put((req, res, next) => {
       /**403 is a code for forbidden method http */
       res.statusCode = 403;
       res.end(`PUT operation not supported on /Users`)
    })
-   .post((req, res, next) => {
-      var {
-         name
-      } = req.body /**Need to put the variable into keys to recongize value */
-      if(name){
-         pool.query(`INSERT INTO public.users(name) VALUES ('${name}')`)
-         .then((user) => {
-            res.statusCode = 200
-            //    res.setHeader('Content-type','application/json')
-            res.send(`User ${user.rows} added`)
-         }, (err) => next(err))
-         .catch((err) => next(err))
-      }
-      else res.send('Name field is empty')
-      
-   })
+   .post(async (req, res) => {
+      const {name} = req.body
+      const user =  await User.create({name})
+      return res.json(user)
+   }) 
    .delete((req, res, next) => {
       /**Deleting all users*/
       pool.query(`DELETE FROM public.users`)
@@ -47,6 +30,8 @@ router.route('/')
          }, (err) => next(err))
          .catch((err) => next(err))
    })
+
+//Post with sequelize 
 
 router.route('/:userId')
    .get((req, res, next) => {

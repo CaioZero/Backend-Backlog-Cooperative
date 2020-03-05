@@ -11,11 +11,12 @@
 const Sequelize = require(`sequelize`)
 const dbConfig = require('../config/dbConfig')
 
-
 const connection = new Sequelize(dbConfig)
 
-/*const User = require(`../models/User`)
-const Address = require(`../models/Address`)
+const User = require(`../models/User`)
+
+User.init(connection)
+/*const Address = require(`../models/Address`)
 
 User.init(connection)/**inicializar o Model user conectado ao banco */
 /* Address.init(connection)
